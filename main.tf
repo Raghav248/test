@@ -1,6 +1,7 @@
 module "cloudfront" {
   depends_on                    = [aws_cloudfront_response_headers_policy.response_header_policy]
-  source                        = "github.com/prac-CloudEngineering/aws-terraform-modules//common/cloudfront"
+  #source                        = "github.com/prac-CloudEngineering/aws-terraform-modules//common/cloudfront"
+  source                        = "terraform-aws-modules/cloudfront/aws"
   aliases                       = var.aliases
   default_root_object           = var.default_root_object
   enabled                       = var.enabled
@@ -12,6 +13,7 @@ module "cloudfront" {
   create_origin_access_identity = var.create_origin_access_identity
   origin_access_identities      = var.origin_access_identities
   origin                        = var.origin
+  
   default_cache_behavior = {
     target_origin_id           = var.target_origin_id[0]
     allowed_methods            = var.allowed_methods
@@ -20,10 +22,28 @@ module "cloudfront" {
     use_forwarded_values       = var.use_forwarded_values
     response_headers_policy_id = aws_cloudfront_response_headers_policy.response_header_policy.etag
     query_string               = var.query_string
-    smooth_streaming           = false
     cookies = {
-      forward = "all"
+      forward = var.cookies_forward[0]
     }
+    lambda_function_associations = [
+      {
+        event_type   = var.event_type[0]
+        lambda_arn   = var.lambda_arn[0]
+        include_body = false
+      }
+    ]
+    lambda_function_associations = [
+      {
+        event_type   = var.event_type[1]
+        lambda_arn   = var.lambda_arn[1]
+        include_body = false
+      }
+    ]
+  }
+
+  logging_config = {
+    bucket         = var.cf_bucket
+    prefix         = var.cf_prefix
   }
 
   ordered_cache_behavior = [
@@ -31,75 +51,55 @@ module "cloudfront" {
       path_pattern           = var.path_pattern[0]
       target_origin_id       = var.target_origin_id[1]
       viewer_protocol_policy = var.viewer_protocol_policy_allow_all
-      allowed_methods        = ["GET", "HEAD"]
-
+      allowed_methods        = var.allowed_methods
       use_forwarded_values = var.use_forwarded_values
       query_string         = var.query_string
-      custom_headers       = ["*"]
       cookies = {
-        forward = "all"
+        forward = var.cookies_forward[1]
       }
-      response_headers_policy_name = var.response_headers_policy_name
+      response_headers_policy_id = aws_cloudfront_response_headers_policy.response_header_policy.etag
     },
     {
       path_pattern           = var.path_pattern[1]
       target_origin_id       = var.target_origin_id[2]
       viewer_protocol_policy = var.viewer_protocol_policy_https_only
       allowed_methods        = var.allowed_methods
-
       use_forwarded_values = var.use_forwarded_values
       query_string         = var.query_string
       custom_headers       = ["*"]
       cookies = {
-        forward = "all"
+        forward = var.cookies_forward[2]
       }
-      response_headers_policy_name = var.response_headers_policy_name
+      response_headers_policy_id = aws_cloudfront_response_headers_policy.response_header_policy.etag
     },
     {
       path_pattern           = var.path_pattern[2]
-      target_origin_id       = var.target_origin_id[2]
+      target_origin_id       = var.target_origin_id[0]
       viewer_protocol_policy = var.viewer_protocol_policy_https_only
       allowed_methods        = var.allowed_methods
-
       use_forwarded_values = var.use_forwarded_values
       query_string         = var.query_string
-      custom_headers       = ["*"]
       cookies = {
-        forward = "all"
+        forward = var.cookies_forward[3]
       }
-      response_headers_policy_name = var.response_headers_policy_name
-    },
-    {
-      path_pattern           = var.path_pattern[3]
-      target_origin_id       = var.target_origin_id[2]
-      viewer_protocol_policy = var.viewer_protocol_policy_https_only
-      allowed_methods        = var.allowed_methods
-
-      use_forwarded_values = var.use_forwarded_values
-      query_string         = var.query_string
-      custom_headers       = ["*"]
-      cookies = {
-        forward = "all"
-      }
-      response_headers_policy_name = var.response_headers_policy_name
+      response_headers_policy_id = aws_cloudfront_response_headers_policy.response_header_policy.etag
     }
   ]
   custom_error_response = [{
     error_code            = var.error_code[0]
     response_code         = var.response_code
-    error_caching_min_ttl = 5
+    error_caching_min_ttl = var.error_caching_min_ttl
     response_page_path    = var.response_page_path
     }, {
     error_code            = var.error_code[1]
     response_code         = var.response_code
     error_caching_min_ttl = 5
     response_page_path    = var.response_page_path
-    }, {
-    error_code            = var.error_code[2]
-    response_code         = var.response_code
-    error_caching_min_ttl = 5
-    response_page_path    = var.response_page_path
-  }]
+    }
+  ]
+    geo_restriction = {
+      restriction_type = "none"
+    }
   viewer_certificate = var.viewer_certificate
   web_acl_id         = var.web_acl_id
   tags               = local.tags
@@ -155,7 +155,8 @@ resource "aws_cloudfront_response_headers_policy" "response_header_policy" {
 
 module "cloudfront_2" {
   depends_on                    = [aws_cloudfront_response_headers_policy.response_header_policy]
-  source                        = "github.com/prac-CloudEngineering/aws-terraform-modules//common/cloudfront"
+  #source                        = "github.com/prac-CloudEngineering/aws-terraform-modules//common/cloudfront"
+  source                        = "terraform-aws-modules/cloudfront/aws"
   aliases                       = var.aliases_2
   default_root_object           = var.default_root_object
   enabled                       = var.enabled
@@ -167,6 +168,7 @@ module "cloudfront_2" {
   create_origin_access_identity = var.create_origin_access_identity
   origin_access_identities      = var.origin_access_identities_2
   origin                        = var.origin_2
+
   default_cache_behavior = {
     target_origin_id           = var.target_origin_id_2[0]
     allowed_methods            = var.allowed_methods
@@ -175,10 +177,28 @@ module "cloudfront_2" {
     use_forwarded_values       = var.use_forwarded_values
     response_headers_policy_id = aws_cloudfront_response_headers_policy.response_header_policy.etag
     query_string               = var.query_string
-    smooth_streaming           = false
     cookies = {
-      forward = "all"
+      forward = var.cookies_forward_cf2[0]
     }
+    lambda_function_associations = [
+      {
+        event_type   = var.event_type[0]
+        lambda_arn   = var.lambda_arn[0]
+        include_body = false
+      }
+    ]
+    lambda_function_associations = [
+      {
+        event_type   = var.event_type[1]
+        lambda_arn   = var.lambda_arn[1]
+        include_body = false
+      }
+    ]
+  }
+
+  logging_config = {
+    bucket         = var.cf_bucket
+    prefix         = var.cf2_prefix
   }
 
   ordered_cache_behavior = [
@@ -186,76 +206,50 @@ module "cloudfront_2" {
       path_pattern           = var.path_pattern_2[0]
       target_origin_id       = var.target_origin_id_2[1]
       viewer_protocol_policy = var.viewer_protocol_policy_https_only
-      allowed_methods        = ["GET", "HEAD"]
-
+      allowed_methods        = var.allowed_methods
       use_forwarded_values = var.use_forwarded_values
-      query_string         = var.query_string
+      query_string         = var.query_string_true
       custom_headers       = ["*"]
       cookies = {
-        forward = "all"
+        forward = var.cookies_forward_cf2[1]
       }
-      response_headers_policy_name = var.response_headers_policy_name
+      response_headers_policy_id = aws_cloudfront_response_headers_policy.response_header_policy.etag
     },
     {
       path_pattern           = var.path_pattern_2[1]
-      target_origin_id       = var.target_origin_id_2[2]
-      viewer_protocol_policy = var.viewer_protocol_policy_https_only
-      allowed_methods        = var.allowed_methods
-
+      target_origin_id       = var.target_origin_id_2[0]
+      viewer_protocol_policy = var.viewer_protocol_policy_redirects_to_https
+      allowed_methods        = ["GET", "HEAD", "OPTIONS"]
       use_forwarded_values = var.use_forwarded_values
       query_string         = var.query_string
-      custom_headers       = ["*"]
       cookies = {
-        forward = "all"
+        forward = var.cookies_forward_cf2[2]
       }
-      response_headers_policy_name = var.response_headers_policy_name
-    },
-    {
-      path_pattern           = var.path_pattern[2]
-      target_origin_id       = var.target_origin_id[2]
-      viewer_protocol_policy = var.viewer_protocol_policy_https_only
-      allowed_methods        = var.allowed_methods
-
-      use_forwarded_values = var.use_forwarded_values
-      query_string         = var.query_string
-      custom_headers       = ["*"]
-      cookies = {
-        forward = "all"
-      }
-      response_headers_policy_name = var.response_headers_policy_name
-    },
-    {
-      path_pattern           = var.path_pattern[3]
-      target_origin_id       = var.target_origin_id[2]
-      viewer_protocol_policy = var.viewer_protocol_policy_https_only
-      allowed_methods        = var.allowed_methods
-
-      use_forwarded_values = var.use_forwarded_values
-      query_string         = var.query_string
-      custom_headers       = ["*"]
-      cookies = {
-        forward = "all"
-      }
-      response_headers_policy_name = var.response_headers_policy_name
+      response_headers_policy_id = aws_cloudfront_response_headers_policy.response_header_policy.etag
     }
   ]
   custom_error_response = [{
     error_code            = var.error_code[0]
     response_code         = var.response_code
-    error_caching_min_ttl = 5
+    error_caching_min_ttl = var.error_caching_min_ttl
     response_page_path    = var.response_page_path
     }, {
     error_code            = var.error_code[1]
     response_code         = var.response_code
-    error_caching_min_ttl = 5
+    error_caching_min_ttl = var.error_caching_min_ttl
     response_page_path    = var.response_page_path
     }, {
     error_code            = var.error_code[2]
     response_code         = var.response_code
-    error_caching_min_ttl = 5
+    error_caching_min_ttl = var.error_caching_min_ttl
     response_page_path    = var.response_page_path
   }]
-  viewer_certificate = var.viewer_certificate
+
+  geo_restriction = {
+    restriction_type = "none"
+  }
+
+  viewer_certificate = var.viewer_certificate_cf2
   web_acl_id         = var.web_acl_id
   tags               = local.tags
 }

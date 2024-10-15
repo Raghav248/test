@@ -91,7 +91,31 @@ variable "price_class" {
   type        = string
 }
 
+variable "cf_bucket" {
+  description = "The S3 bucket for CloudFront logging"
+  type        = string
+}
+
+variable "cf_prefix" {
+  description = "Prefix for CloudFront logging"
+  type        = string
+}
+
+variable "cf2_prefix" {
+  description = "Prefix for CloudFront logging"
+  type        = string
+}
+
 variable "viewer_certificate" {
+  description = "The SSL configuration for this distribution"
+  type        = any
+  default = {
+    cloudfront_default_certificate = true
+    minimum_protocol_version       = "TLSv1"
+  }
+}
+
+variable "viewer_certificate_cf2" {
   description = "The SSL configuration for this distribution"
   type        = any
   default = {
@@ -104,6 +128,12 @@ variable "web_acl_id" {
   description = "The ID of the WAF web ACL to associate with the distribution"
   type        = string
 }
+
+variable "error_caching_min_ttl" {
+  description = "Minimum TTL for error caching"
+  type        = number
+}
+
 variable "custom_error_response" {
   description = "One or more custom error response elements"
   type        = any
@@ -135,6 +165,10 @@ variable "allowed_methods" {
 }
 variable "query_string" {
   type = bool
+}
+variable "query_string_true" {
+  description = "Boolean value to indicate if query strings should be forwarded"
+  type        = bool
 }
 variable "path_pattern" {
   type = list(string)
