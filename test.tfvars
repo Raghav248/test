@@ -1,48 +1,42 @@
 environment                   = "test"
 region                        = "us-east-1"
 account_no                    = "767397862132"
-aliases                       = ["mc2test-gf.plymouthrock.com", "mc2-cltest-gf.plymouthrock.com"]
-aliases_2                     = ["mctest-gf.plymouthrock.com", "mc-cltest-gf.plymouthrock.com"]
+aliases                       = ["ci2test-gf.plymouthrock.com", "mobiletest-gf.plymouthrock.com"]
+aliases_2                     = ["citest-gf.pilgrimins.com"]
 enabled                       = true
 http_version                  = "http2"
 is_ipv6_enabled               = "true"
-price_class                   = "PriceClass_All"
+price_class                   = "PriceClass_100"
 retain_on_delete              = "false"
 staging                       = "false"
 create_origin_access_identity = true
 origin_access_identities = {
-  esales_rider_s3_bk = "access-identity-esales-test-gf-dr.s3.amazonaws.com"
+  eservice_ui_test_gf = "eservice-ui-test-gf.s3.amazonaws.com"
 }
 origin = {
   s3_one = {
-    domain_name = "esales-rider-ui-test-gf-dr.s3.us-east-1.amazonaws.com"
-    origin_id   = "S3-esales-rider-ui-test-gf-dr"
+    domain_name = "eservice-ui-test-gf.s3.us-east-1.amazonaws.com"
+    origin_id   = "S3-eservice-ui-test-gf"
     s3_origin_config = {
-      origin_access_identity = "esales_rider_s3_bk"
+      origin_access_identity = "eservice_ui_test_gf"
     }
   }
-  custom_ec = {
-    domain_name = "es-cltest-gf.plymouthrock.com"
-    origin_id   = "custom-ectest-gf.plymouthrock.com"
+  custom_agw = {
+    domain_name = "agwtest-gf.plymouthrock.com"
+    origin_id   = "custom-agwtest-gf.plymouthrock.com"
     custom_origin_config = {
       https_port           = 443
-      origin_ssl_protocols = ["TLSv1"]
+      origin_ssl_protocols = ["TLSv1.2"]
+      origin_protocol_policy   = "https-only"
     }
   }
-  custom_es = {
-    domain_name = "estest-gf.plymouthrock.com"
-    origin_id   = "custom-estest-gf.plymouthrock.com"
+  custom_apims = {
+    domain_name = "apimstest-gf.plymouthrock.com"
+    origin_id   = "custom-apimstest-gf.plymouthrock.com"
     custom_origin_config = {
       https_port           = 443
-      origin_ssl_protocols = ["TLSv1"]
-    }
-  }
-  esales_rider_maintenance_pages = {
-    origin_id   = "esales-rider-maintenance-pages"
-    domain_name = "www.plymouthrock.com"
-    origin_path = "/utility/maintenance"
-    custom_origin_config = {
-      http_port = 80
+      origin_ssl_protocols = ["TLSv1.2"]
+      origin_protocol_policy   = "https-only"
     }
   }
 }
