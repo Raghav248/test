@@ -26,8 +26,9 @@ origin = {
     origin_id   = "custom-agwtest-gf.plymouthrock.com"
     custom_origin_config = {
       https_port           = 443
+      http_port              = 80
+      origin_protocol_policy = "https-only"
       origin_ssl_protocols = ["TLSv1.2"]
-      origin_protocol_policy   = "https-only"
     }
   }
   custom_apims = {
@@ -35,14 +36,15 @@ origin = {
     origin_id   = "custom-apimstest-gf.plymouthrock.com"
     custom_origin_config = {
       https_port           = 443
+      http_port              = 80
+      origin_protocol_policy = "https-only"
       origin_ssl_protocols = ["TLSv1.2"]
-      origin_protocol_policy   = "https-only"
     }
   }
 }
 
 viewer_certificate = {
-  acm_certificate_arn            = "arn:aws:acm:us-east-1:767397862132:certificate/43de728e-d920-4472-815f-e1b8e835b2d3"
+  acm_certificate_arn            = "arn:aws:acm:us-east-1:767397862132:certificate/906a9162-c4dc-4206-b0d2-cd6bb59f1ffa"
   cloudfront_default_certificate = "false"
   minimum_protocol_version       = "TLSv1.2_2021"
   ssl_support_method             = "sni-only"
@@ -50,8 +52,8 @@ viewer_certificate = {
 
 web_acl_id = "arn:aws:wafv2:us-east-1:767397862132:global/webacl/Default-WAF-Test-CF/77d5f1cc-80ad-4df1-8ce2-778d193f0fcf"
 
-target_origin_id                          = ["S3-esales-rider-ui-test-gf-dr", "esales-rider-maintenance-pages", "custom-ectest-gf.plymouthrock.com"]
-target_origin_id_2                        = ["S3-esales-rider-ui-test-gf", "esales-rider-maintenance-pages", "custom-es-cltest-gf.plymouthrock.com"]
+target_origin_id                          = ["S3-eservice-ui-test-gf", "custom-agwtest-gf.plymouthrock.com", "custom-apimstest-gf.plymouthrock.com"]
+target_origin_id_2                        = ["S3-eservice-ui-test-gf", "custom-apimstest-gf.plymouthrock.com"]
 viewer_protocol_policy_https_only         = "https-only"
 viewer_protocol_policy_allow_all          = "allow-all"
 viewer_protocol_policy_redirects_to_https = "redirect-to-https"
@@ -59,50 +61,39 @@ compress                                  = false
 use_forwarded_values                      = true
 allowed_methods                           = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
 query_string                              = true
-path_pattern                              = ["/xyz/*", "/eway/route/rider2/ws/ui/pdf/multiquote/*", "/eway/route/rider2/ws/ui/esign/getPDFDoc/*", "/eway/route/rider2/ws/ui/esign/pdf/*"]
-path_pattern_2                            = ["/xyz/*", "/eway/route/rider/ws/ui/pdf/multiquote/*", "/eway/route/rider/ws/ui/esign/getPDFDoc/*", "/eway/route/rider/ws/ui/esign/pdf/*"]
+cookies_forward                           = ["all", "none", "all", "none"]
+cookies_forward_cf2                       = ["all", "all", "none"]
+event_type                                = ["origin-request", "origin-response"]
+lambda_arn                                = ["arn:aws:lambda:us-east-1:xxxxxxxxxx:function:CI_Maintainance_Page_Trigger:1", "arn:aws:lambda:us-east-1:xxxxxxxxxx:function:ci-eservice-response-headers-prod:6"]
+cf_log_bucket                             = "aws-accelerator-s3-access-logs-767397862132-us-east-1.s3.amazonaws.com"
+cf_prefix                                 = "ci2"
+cf2_prefix                                = "pilg"
+path_pattern                              = ["/mfe-driver/*", "/rq/*", "/eservice-ws/*"]
+path_pattern_2                            = ["/mfe-driver/*", "/eservice-ws/*"]
 response_page_path                        = "/index.html"
 response_code                             = 200
 error_code                                = [403, 404, 500]
-header_policy_name                        = "Custom-CORS-and-SecurityHeadersPolicy"
-origin_override                           = false
-override                                  = false
-access_control_max_age_sec                = 31536000
-referrer_policy                           = "strict-origin-when-cross-origin"
-response_headers_policy_name              = "Custom-CORS-and-SecurityHeadersPolicy"
+response_headers_policy_id                = "e2410abb-ff50-4755-8a9f-f623af192b8d"
 origin_access_identities_2 = {
-  esales_rider_s3_bucket = "access-identity-esales-test-gf.s3.amazonaws.com"
+  eservice-ui-test-gf = "eservice-ui-test-gf.s3.amazonaws.com"
 }
 
 origin_2 = {
   s3_bucket = {
-    domain_name = "esales-rider-ui-test-gf.s3.us-east-1.amazonaws.com"
-    origin_id   = "S3-esales-rider-ui-test-gf"
+    domain_name = "eservice-ui-test-gf.s3.us-east-1.amazonaws.com"
+    origin_id   = "S3-eservice-ui-test-gf"
     s3_origin_config = {
-      origin_access_identity = "esales_rider_s3_bucket"
+      origin_access_identity = "eservice-ui-test-gf"
     }
   }
   custom_ec = {
-    domain_name = "es-test-gf.plymouthrock.com"
-    origin_id   = "custom-ectest-gf.plymouthrock.com"
-    custom_origin_config = {
-      http_port = 80
-    }
-  }
-  custom_es = {
-    domain_name = "es-cltest-gf.plymouthrock.com"
-    origin_id   = "custom-es-cltest-gf.plymouthrock.com"
+    domain_name = "apimstest-gf.plymouthrock.com"
+    origin_id   = "custom-apimstest-gf.plymouthrock.com"
     custom_origin_config = {
       https_port           = 443
-      origin_ssl_protocols = ["TLSv1"]
-    }
-  }
-  esales_rider_maintenance_pages = {
-    origin_id   = "esales-rider-maintenance-pages"
-    domain_name = "www.plymouthrock.com"
-    origin_path = "/utility/maintenance/?"
-    custom_origin_config = {
-      http_port = 80
+      http_port              = 80
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols = ["TLSv1.2"]
     }
   }
 }
