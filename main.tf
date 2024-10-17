@@ -1,5 +1,4 @@
 module "cloudfront" {
-  depends_on                    = [aws_cloudfront_response_headers_policy.response_header_policy]
   #source                        = "github.com/prac-CloudEngineering/aws-terraform-modules//common/cloudfront"
   source                        = "terraform-aws-modules/cloudfront/aws"
   aliases                       = var.aliases
@@ -53,7 +52,7 @@ module "cloudfront" {
       viewer_protocol_policy = var.viewer_protocol_policy_allow_all
       allowed_methods        = var.allowed_methods
       use_forwarded_values = var.use_forwarded_values
-      query_string         = var.query_string
+      query_string         = var.query_string_false
       cookies = {
         forward = var.cookies_forward[1]
       }
@@ -78,7 +77,7 @@ module "cloudfront" {
       viewer_protocol_policy = var.viewer_protocol_policy_https_only
       allowed_methods        = var.allowed_methods
       use_forwarded_values = var.use_forwarded_values
-      query_string         = var.query_string
+      query_string         = var.query_string_false
       cookies = {
         forward = var.cookies_forward[3]
       }
@@ -93,7 +92,7 @@ module "cloudfront" {
     }, {
     error_code            = var.error_code[1]
     response_code         = var.response_code
-    error_caching_min_ttl = 5
+    error_caching_min_ttl = var.error_caching_min_ttl
     response_page_path    = var.response_page_path
     }
   ]
@@ -106,7 +105,6 @@ module "cloudfront" {
 }
 
 module "cloudfront_2" {
-  depends_on                    = [aws_cloudfront_response_headers_policy.response_header_policy]
   #source                        = "github.com/prac-CloudEngineering/aws-terraform-modules//common/cloudfront"
   source                        = "terraform-aws-modules/cloudfront/aws"
   aliases                       = var.aliases_2
@@ -160,7 +158,7 @@ module "cloudfront_2" {
       viewer_protocol_policy = var.viewer_protocol_policy_https_only
       allowed_methods        = var.allowed_methods
       use_forwarded_values = var.use_forwarded_values
-      query_string         = var.query_string_true
+      query_string         = var.query_string
       custom_headers       = ["*"]
       cookies = {
         forward = var.cookies_forward_cf2[1]
@@ -173,7 +171,7 @@ module "cloudfront_2" {
       viewer_protocol_policy = var.viewer_protocol_policy_redirects_to_https
       allowed_methods        = ["GET", "HEAD", "OPTIONS"]
       use_forwarded_values = var.use_forwarded_values
-      query_string         = var.query_string
+      query_string         = var.query_string_false
       cookies = {
         forward = var.cookies_forward_cf2[2]
       }

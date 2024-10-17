@@ -61,6 +61,7 @@ compress                                  = false
 use_forwarded_values                      = true
 allowed_methods                           = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
 query_string                              = true
+query_string_false                        = false
 cookies_forward                           = ["all", "none", "all", "none"]
 cookies_forward_cf2                       = ["all", "all", "none"]
 event_type                                = ["origin-request", "origin-response"]
@@ -72,6 +73,7 @@ path_pattern                              = ["/mfe-driver/*", "/rq/*", "/eservic
 path_pattern_2                            = ["/mfe-driver/*", "/eservice-ws/*"]
 response_page_path                        = "/index.html"
 response_code                             = 200
+error_caching_min_ttl                     = 300
 error_code                                = [403, 404, 500]
 response_headers_policy_id                = "e2410abb-ff50-4755-8a9f-f623af192b8d"
 origin_access_identities_2 = {
@@ -98,7 +100,7 @@ origin_2 = {
   }
 }
 
-viewer_certificate_cf2 {
+viewer_certificate_cf2 = {
   acm_certificate_arn            = "arn:aws:acm:us-east-1:767397862132:certificate/e05daa2c-c5a0-434f-ab21-9bb2ea221a96"
   cloudfront_default_certificate = "false"
   minimum_protocol_version       = "TLSv1.2_2021"

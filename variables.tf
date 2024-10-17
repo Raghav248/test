@@ -111,6 +111,16 @@ variable "cf2_prefix" {
   type        = string
 }
 
+variable "lambda_arn" {
+  description = "The ARN of the Lambda function to associate with the distribution"
+  type        = list(string)
+}
+
+variable "event_type" {
+  description = "The type of event to associate with the Lambda function"
+  type        = list(string)
+}
+
 variable "viewer_certificate" {
   description = "The SSL configuration for this distribution"
   type        = any
@@ -168,10 +178,16 @@ variable "use_forwarded_values" {
 variable "allowed_methods" {
   type = list(string)
 }
+variable "cookies_forward" {
+  type = list(string)
+}
+variable "cookies_forward_cf2" {
+  type = list(string)
+}
 variable "query_string" {
   type = bool
 }
-variable "query_string_true" {
+variable "query_string_false" {
   description = "Boolean value to indicate if query strings should be forwarded"
   type        = bool
 }
@@ -189,22 +205,4 @@ variable "response_code" {
 }
 variable "error_code" {
   type = list(number)
-}
-variable "header_policy_name" {
-  type = string
-}
-variable "origin_override" {
-  type = bool
-}
-variable "override" {
-  type = bool
-}
-variable "access_control_max_age_sec" {
-  type = number
-}
-variable "referrer_policy" {
-  type = string
-}
-variable "response_headers_policy_name" {
-  type = string
 }
