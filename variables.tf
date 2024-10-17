@@ -86,12 +86,17 @@ variable "origin_2" {
   default     = null
 }
 
+variable "response_headers_policy_id" {
+  description = "The ID of the response headers policy to associate with the distribution"
+  type        = string
+}
+
 variable "price_class" {
   description = "The price class for the distribution"
   type        = string
 }
 
-variable "cf_bucket" {
+variable "cf_log_bucket" {
   description = "The S3 bucket for CloudFront logging"
   type        = string
 }

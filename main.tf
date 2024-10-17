@@ -20,7 +20,7 @@ module "cloudfront" {
     compress                   = var.compress
     viewer_protocol_policy     = var.viewer_protocol_policy_redirects_to_https
     use_forwarded_values       = var.use_forwarded_values
-    response_headers_policy_id = aws_cloudfront_response_headers_policy.response_header_policy.etag
+    response_headers_policy_id = var.response_headers_policy_id
     query_string               = var.query_string
     cookies = {
       forward = var.cookies_forward[0]
@@ -42,7 +42,7 @@ module "cloudfront" {
   }
 
   logging_config = {
-    bucket         = var.cf_bucket
+    bucket         = var.cf_log_bucket
     prefix         = var.cf_prefix
   }
 
@@ -57,7 +57,7 @@ module "cloudfront" {
       cookies = {
         forward = var.cookies_forward[1]
       }
-      response_headers_policy_id = aws_cloudfront_response_headers_policy.response_header_policy.etag
+      response_headers_policy_id = var.response_headers_policy_id
     },
     {
       path_pattern           = var.path_pattern[1]
@@ -70,7 +70,7 @@ module "cloudfront" {
       cookies = {
         forward = var.cookies_forward[2]
       }
-      response_headers_policy_id = aws_cloudfront_response_headers_policy.response_header_policy.etag
+      response_headers_policy_id = var.response_headers_policy_id
     },
     {
       path_pattern           = var.path_pattern[2]
@@ -82,7 +82,7 @@ module "cloudfront" {
       cookies = {
         forward = var.cookies_forward[3]
       }
-      response_headers_policy_id = aws_cloudfront_response_headers_policy.response_header_policy.etag
+      response_headers_policy_id = var.response_headers_policy_id
     }
   ]
   custom_error_response = [{
@@ -103,54 +103,6 @@ module "cloudfront" {
   viewer_certificate = var.viewer_certificate
   web_acl_id         = var.web_acl_id
   tags               = local.tags
-}
-
-
-resource "aws_cloudfront_response_headers_policy" "response_header_policy" {
-  name    = var.header_policy_name
-  comment = "custom header response policy"
-
-  cors_config {
-    access_control_allow_credentials = false
-
-    access_control_allow_headers {
-      items = ["*"]
-    }
-
-    access_control_allow_methods {
-      items = ["ALL"]
-    }
-
-    access_control_allow_origins {
-      items = ["*"]
-    }
-
-    origin_override = var.origin_override
-  }
-  security_headers_config {
-
-    strict_transport_security {
-      access_control_max_age_sec = var.access_control_max_age_sec
-      override                   = var.override
-      include_subdomains         = true
-    }
-    content_type_options {
-      override = true
-    }
-    frame_options {
-      frame_option = "SAMEORIGIN"
-      override     = var.override
-    }
-    xss_protection {
-      protection = true
-      override   = var.override
-      mode_block = true
-    }
-    referrer_policy {
-      referrer_policy = var.referrer_policy
-      override        = var.override
-    }
-  }
 }
 
 module "cloudfront_2" {
@@ -175,7 +127,7 @@ module "cloudfront_2" {
     compress                   = var.compress
     viewer_protocol_policy     = var.viewer_protocol_policy_redirects_to_https
     use_forwarded_values       = var.use_forwarded_values
-    response_headers_policy_id = aws_cloudfront_response_headers_policy.response_header_policy.etag
+    response_headers_policy_id = var.response_headers_policy_id
     query_string               = var.query_string
     cookies = {
       forward = var.cookies_forward_cf2[0]
@@ -197,7 +149,7 @@ module "cloudfront_2" {
   }
 
   logging_config = {
-    bucket         = var.cf_bucket
+    bucket         = var.cf_log_bucket
     prefix         = var.cf2_prefix
   }
 
@@ -213,7 +165,7 @@ module "cloudfront_2" {
       cookies = {
         forward = var.cookies_forward_cf2[1]
       }
-      response_headers_policy_id = aws_cloudfront_response_headers_policy.response_header_policy.etag
+      response_headers_policy_id = var.response_headers_policy_id
     },
     {
       path_pattern           = var.path_pattern_2[1]
@@ -225,7 +177,7 @@ module "cloudfront_2" {
       cookies = {
         forward = var.cookies_forward_cf2[2]
       }
-      response_headers_policy_id = aws_cloudfront_response_headers_policy.response_header_policy.etag
+      response_headers_policy_id = var.response_headers_policy_id
     }
   ]
   custom_error_response = [{

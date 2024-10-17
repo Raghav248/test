@@ -97,3 +97,10 @@ origin_2 = {
     }
   }
 }
+
+viewer_certificate_cf2 {
+  acm_certificate_arn            = "arn:aws:acm:us-east-1:767397862132:certificate/906a9162-c4dc-4206-b0d2-cd6bb59f1ffa"
+  cloudfront_default_certificate = "false"
+  minimum_protocol_version       = "TLSv1.2_2021"
+  ssl_support_method             = "sni-only"
+}
